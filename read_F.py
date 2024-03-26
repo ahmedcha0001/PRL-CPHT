@@ -1,7 +1,6 @@
 
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
+from scipy.integrate import dblquad
 from mainn import *
 
 
@@ -73,142 +72,9 @@ def F_WW(y2, data):
 
 ############################################################################################################
 
-# def F_qg_2(y2, n_sample=5000):
-#     F1 = F(y2)
-#     F_WW1 = F_WW(y2)
-#     results = []
-#     for kt in kt_values:
-#         kt_vect = np.array([kt, 0])
-#         sum = 0
-#         for i in range(n_sample):
-#             rho = np.random.rand() * (max_kt)**2
-#             r = np.sqrt(rho)
-#             theta = np.random.rand() * 2 * np.pi
-#             qt_vect = np.array([r * np.cos(theta), r * np.sin(theta)])
-#             sum += F1(np.linalg.norm(kt_vect - qt_vect)) * F_WW1(r)
-#         results.append(np.pi*max_kt**2*sum/n_sample)
-
-#     def F_qg_2_prime(kt):
-#         i = find_closest_kt_index(kt)
-#         return results[i]
-#     return F_qg_2_prime
-   
-
-# def F_gg_1(y2, n_sample=5000):
-#     F1 = F(y2)
-#     F_fund1 = F_fund(y2)
-#     results = []
-#     for kt in kt_values:
-#         kt_vect = np.array([kt, 0])
-#         sum = 0
-#         for i in range(n_sample):
-#             rho = np.random.rand() * (max_kt)**2
-#             r = np.sqrt(rho)
-#             theta = np.random.rand() * 2 * np.pi
-#             qt_vect = np.array([r * np.cos(theta), r * np.sin(theta)])
-#             sum += F1(np.linalg.norm(kt_vect - qt_vect)) * F_fund1(r)
-#         results.append(np.pi*max_kt**2*sum/n_sample)
-    
-#     def F_gg_1_prime(kt):
-#         i = find_closest_kt_index(kt)
-#         return results[i]
-    
-#     return F_gg_1_prime
+#Functions for the TMDs
 
 
-# def F_gg_6(y2, n_sample=5000):
-#     F1 = F(y2)
-#     F_WW1 = F_WW(y2)
-#     results = []
-#     for kt in kt_values:
-#         kt_vect = np.array([kt, 0])
-#         sum = 0
-#         for i in range(n_sample):
-#             rho, rho1 = np.random.rand() * (max_kt)**2, np.random.rand() * (max_kt)**2
-#             r, r1 = np.sqrt(rho), np.sqrt(rho1)
-#             theta, theta1 = np.random.rand() * 2 * np.pi, np.random.rand() * 2 * np.pi
-#             qt_vect = np.array([r * np.cos(theta), r * np.sin(theta)])
-#             qt_vect1 = np.array([r1 * np.cos(theta1), r1 * np.sin(theta1)])
-#             sum += F_WW1(r)*F1(r1)*F1(np.linalg.norm(kt_vect - qt_vect-qt_vect1))
-#         results.append((np.pi*max_kt**2)**2*sum/n_sample)
-    
-#     def F_gg_6_prime(kt):
-#         i = find_closest_kt_index(kt)
-#         return results[i]
-    
-#     return F_gg_6_prime
-
-
-############################################################################################################
-
-# from scipy.signal import convolve2d
-
-# def F_qg_2_conv(y2):
-#     x_values = kt_values
-#     y_values = kt_values
-#     x_mesh, y_mesh = np.meshgrid(x_values, y_values)
-
-#     F1 = F(y2)
-#     def F11(x, y):
-#         return F1(np.sqrt(x**2 + y**2))
-    
-#     F_WW1 = F_WW(y2)
-#     def F_WW11(x, y):
-#         return F_WW1(np.sqrt(x**2 + y**2))
-
-#     f_values, g_values = np.zeros((n_kt, n_kt)), np.zeros((n_kt, n_kt))
-#     for i in range(n_kt):
-#         for j in range(n_kt):
-#             f_values[i, j] = F11(x_values[i], y_values[j])
-#             g_values[i, j] = F_WW11(x_values[i], y_values[j])
-
-#     # Perform the 2D convolution
-#     convolution_result = convolve2d(f_values, g_values, mode='same', boundary='symm')
-
-#     # Define a function for the convolution result
-#     def convolution_function(x, y):
-#         x_index = np.argmin(np.abs(x_values - x))
-#         y_index = np.argmin(np.abs(y_values - y))
-#         return convolution_result[y_index, x_index]
-    
-#     return convolution_function
-
-# def F_gg_1_conv(y2):
-#     x_values = kt_values
-#     y_values = kt_values
-#     x_mesh, y_mesh = np.meshgrid(x_values, y_values)
-
-#     F1 = F(y2)
-#     def F11(x, y):
-#         return F1(np.sqrt(x**2 + y**2))
-    
-#     F_fund1 = F_fund(y2)
-#     def F_fund11(x, y):
-#         return F_fund1(np.sqrt(x**2 + y**2))
-
-#     f_values, g_values = np.zeros((n_kt, n_kt)), np.zeros((n_kt, n_kt))
-#     for i in range(n_kt):
-#         for j in range(n_kt):
-#             f_values[i, j] = F11(x_values[i], y_values[j])
-#             g_values[i, j] = F_fund11(x_values[i], y_values[j])
-
-#     # Perform the 2D convolution
-#     convolution_result = convolve2d(f_values, g_values, mode='same', boundary='symm')
-
-#     # Define a function for the convolution result
-#     def convolution_function(x, y):
-#         x_index = np.argmin(np.abs(x_values - x))
-#         y_index = np.argmin(np.abs(y_values - y))
-#         return convolution_result[y_index, x_index]
-    
-#     return convolution_function
-
-
-
-############################################################################################################
-
-
-from scipy.integrate import dblquad
 
 def F_qg_1(y2, data):
     return F_fund(y2, data)
